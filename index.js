@@ -1,3 +1,4 @@
+const apicache = require('apicache');
 const compression = require('compression');
 const express = require('express');
 const helmet = require('helmet');
@@ -12,6 +13,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 const tempFolder = './tmp';
 const version = '1.0.0;';
+const cache = apicache.middleware;
 
 app.use(compression());
 app.use(helmet());
@@ -27,7 +29,7 @@ app.get('/megasena', (req, res) => {
     });
 });
 
-app.get('/megasena/last', (req, res) => {
+app.get('/megasena/last', cache('5 minutes'), (req, res) => {
   loteria.megaSena(tempFolder)
     .then((jsonArray) => {
       res.status(200).json([jsonArray.slice(-1).pop()]);
