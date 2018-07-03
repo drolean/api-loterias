@@ -1,18 +1,26 @@
+const compression = require('compression');
 const express = require('express');
+const helmet = require('helmet');
 
-const bugsnag = require('bugsnag');
+require('dotenv').config();
 
-bugsnag.register('010ac89d903f61c10291a63c2061fc02');
-
-const app = express();
-const port = 3000;
+const bugsnag = require('./config/bugsnag');
+const logger = require('./config/winston');
 const loteria = require('./loteria');
 
+const app = express();
+const port = process.env.PORT || 3000;
 const tempFolder = './tmp';
+const version = '1.0.0;';
 
-app.get('/', (req, res) => res.json({ app: 'TNOnline', version: '1.0.0' }));
+app.use(compression());
+app.use(helmet());
+app.use(bugsnag.requestHandler);
+
+app.get('/', (req, res) => res.json({ app: 'APILoteria', version }));
 
 app.get('/megasena', (req, res) => {
+  console.log('Sending internal request to backend...');
   loteria.megaSena(tempFolder)
     .then((jsonArray) => {
       res.status(200).json(jsonArray);
@@ -40,7 +48,6 @@ app.get('/lotofacil', (req, res) => {
     });
 });
 
-
 app.listen(port, () => {
-  console.log('API Loterias ONLINE');
+  logger.info(`API Loteria listening on port ${port}`);
 });
