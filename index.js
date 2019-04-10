@@ -12,7 +12,7 @@ const loteria = require('./loteria');
 const app = express();
 const port = process.env.PORT || 3000;
 const tempFolder = './tmp';
-const version = '1.0.0;';
+const version = '1.0.1;';
 const cache = apicache.middleware;
 
 app.use(compression());
